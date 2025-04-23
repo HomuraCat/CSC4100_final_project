@@ -1,0 +1,8 @@
+{
+    
+    "FILE_PATH": "../data/test.txt",
+
+    "FILE_PATH1": "../data/pro_stereotyped_type1.txt.test",
+    "OUTPUT_PATH": "./winobias_pro_stereotyped_type1_results.csv",
+    "TOKENIZER_PATH": "../tokenizer"
+}

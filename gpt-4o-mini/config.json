@@ -1,0 +1,6 @@
+{
+    "OPENAI_API_KEY": "sk-R2BBzc6xKaqWWR9LCcC6C0E0481549418a0a6278Cb4dC160",
+    "OPENAI_BASE_URL": "https://api.yesapikey.com/v1",
+    "FILE_PATH": "../data/pro_stereotyped_type2.txt.test",
+    "OUTPUT_PATH": "./winobias_pro_stereotyped_tpye2_results.csv"
+  }

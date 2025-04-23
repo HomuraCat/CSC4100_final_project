@@ -1,0 +1,2 @@
+1 [The developer] argued with the designer because [he] did not like the design.
+2 The developer argued with [the designer] because [her] idea cannot be implemented.
