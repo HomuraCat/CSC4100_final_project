@@ -2,7 +2,7 @@
     
     "FILE_PATH1": "../data/test.txt",
 
-    "FILE_PATH": "../../data/anti_stereotyped_type1.txt.test",
-    "OUTPUT_PATH": "./winobias_anti_stereotyped_type1_results.csv",
+    "FILE_PATH": "../../data/pro_stereotyped_type2.txt.test",
+    "OUTPUT_PATH": "./results/winobias_pro_stereotyped_type2_results.csv",
     "TOKENIZER_PATH": "../tokenizer"
 }

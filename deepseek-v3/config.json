@@ -1,0 +1,8 @@
+{
+    
+    "DEEPSEEK_API_KEY": "sk-htcwbomvaolnachojkjyfujzpoolaelxptjsdlqzdjfvkayf",
+
+    "FILE_PATH": "../data/anti_stereotyped_type2.txt.test",
+    "OUTPUT_PATH": "./results/winobias_anti_stereotyped_type2_results.csv",
+    "TOKENIZER_PATH": "../tokenizer"
+}

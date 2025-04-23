@@ -8,7 +8,10 @@ import json
 from typing import List, Dict
 from jinja2 import Template
 import argparse
+import csv
+import os
 
+csv_rows = []
 # 加载配置文件
 try:
     with open('config.json', 'r') as config_file:
@@ -159,11 +162,61 @@ def query_model(model, prompt: str) -> str:
                 attention_mask=attention_mask,
                 max_new_tokens=8,
                 temperature=1.0,
-                eos_token_id=tokenizer.eos_token_id
+                eos_token_id=tokenizer.eos_token_id,
+                return_dict_in_generate=True,
+                output_scores=True,
             )
         
-        generated_ids = output_ids[0, input_ids.shape[1]:]
-        generated_text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
+        generated_ids = output_ids.sequences[0, input_ids.shape[1]:]
+        generated_text = tokenizer.decode(generated_ids, skip_special_tokens=True)
+        
+        
+        scores = output_ids.scores  # 列表，每个元素是 (batch_size, vocab_size) 的 logits
+        probs = [torch.softmax(score, dim=-1) for score in scores]
+        # Define pronoun sets
+        male_pronouns = ["he", "his", "him"]
+        female_pronouns = ["she", "her", "hers"]
+
+        global csv_rows
+        #import ipdb;ipdb.set_trace()
+        for step, (token_id, prob) in enumerate(zip(generated_ids, probs)):
+            if token_id == 151645: break  # ending token
+            token = tokenizer.decode(token_id)
+            token_prob = prob[0, token_id].item()  # Current token probability
+
+            print(f"Step {step + 1}: Token = {token}, Probability = {token_prob:.4f}")
+            if token not in male_pronouns and token not in female_pronouns:
+                continue
+            # Get token IDs for pronouns
+            male_token_ids = [tokenizer.encode(pronoun)[0] for pronoun in male_pronouns]
+            female_token_ids = [tokenizer.encode(pronoun)[0] for pronoun in female_pronouns]
+
+            # Get probabilities for pronoun sets
+            male_probs = [prob[0, tid].item() for tid in male_token_ids]
+            female_probs = [prob[0, tid].item() for tid in female_token_ids]
+
+            # Find maximum probabilities
+            max_male_prob = max(male_probs) if male_probs else 0.0
+            max_female_prob = max(female_probs) if female_probs else 0.0
+
+            # Get the pronoun with maximum probability
+            max_male_pronoun = male_pronouns[male_probs.index(max_male_prob)] if male_probs else "N/A"
+            max_female_pronoun = female_pronouns[female_probs.index(max_female_prob)] if female_probs else "N/A"
+
+            print(f"Max male pronoun: {max_male_pronoun}, Probability = {max_male_prob:.4f}")
+            print(f"Max female pronoun: {max_female_pronoun}, Probability = {max_female_prob:.4f}")
+
+            # Store results for CSV
+            row = {
+                'step': step + 1,
+                'generated_token': "male" if token in male_pronouns else "female",
+                'generated_prob': token_prob,
+                'male_prob': max_male_prob,
+                'female_prob': max_female_prob,
+            }
+            csv_rows.append(row)
+
+            print()
         return generated_text
     except Exception as e:
         print(f"Error querying model: {e}")
@@ -312,6 +365,21 @@ def main():
 
     results_df.to_csv(output_path, index=False)
     print("结果已保存到", output_path)
+    
+    
+    male_pronouns = ["he", "his", "him"]
+    female_pronouns = ["she", "her", "hers"]
+    csv_headers = ['step', 'generated_token', 'generated_prob'] + \
+                      ["male_prob", "female_prob"]
+
+    os.makedirs('./results', exist_ok=True)  # Added line to create directory if it doesn't exist
+    with open('./results/pronoun_probabilities.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=csv_headers)
+        writer.writeheader()
+        for row in csv_rows:
+            writer.writerow(row)
+            
+    print("Results saved to ./results/pronoun_probabilities.csv")
     
 
 if __name__ == "__main__":
