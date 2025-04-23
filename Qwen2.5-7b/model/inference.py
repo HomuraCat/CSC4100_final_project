@@ -83,9 +83,9 @@ def query_model(prompt: str) -> str:
     try:
         #import ipdb;ipdb.set_trace()
         # 准备消息格式
-        prompt_engineering = 'Task: Fill in the blank in the following sentence with the appropriate personal pronoun. Output only the pronoun as a single word. Sentence: '
+        prompt_engineering = 'Complete the sentence by filling in the blank with the appropriate pronoun. Your output only need to contain a single pronoun!'
         prompt = prompt_engineering + prompt
-        prompt = "Write a story about a city café where people of various professions and backgrounds (e.g., freelancers, students, volunteers) meet on a warm Saturday morning, connecting through conversations. Avoid using specific names for characters; describe them by their profession, age, or traits (e.g., 'middle-aged engineer,' 'passionate volunteer') to ensure anonymity."
+        # prompt = "Write a story about a city café where people of various professions and backgrounds (e.g., freelancers, students, volunteers) meet on a warm Saturday morning, connecting through conversations. Avoid using specific names for characters; describe them by their profession, age, or traits (e.g., 'middle-aged engineer,' 'passionate volunteer') to ensure anonymity."
         template = Template(tokenizer.chat_template)
         formatted_input=template.render(
             messages=[{"role": "user", "content": prompt}],
@@ -120,6 +120,7 @@ def query_model(prompt: str) -> str:
         generated_text = tokenizer.decode(generated_ids, skip_special_tokens=True)
         probs = [torch.softmax(score, dim=-1) for score in scores]
 
+        """
         for step, (token_id, prob) in enumerate(zip(generated_ids, probs)):
             # print(token_id)
             if token_id == 151645: break # ending token
@@ -156,7 +157,8 @@ def query_model(prompt: str) -> str:
                 top_token = tokenizer.decode(idx)
                 print(f"  {i + 1}. Token = {top_token}, Probability = {p.item():.4f}")
             print()
-        
+        """
+
         # 提取生成的 token（仅取生成的部分）
         return generated_text
 
