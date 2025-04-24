@@ -317,7 +317,7 @@ def main():
             output_dir=lora_output_dir,
             per_device_train_batch_size=4,
             gradient_accumulation_steps=4,
-            num_train_epochs=3,
+            num_train_epochs=2,
             learning_rate=2e-4,
             fp16=True,
             logging_steps=10,
