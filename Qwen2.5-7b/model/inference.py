@@ -86,7 +86,8 @@ def query_model(prompt: str) -> str:
     try:
         #import ipdb;ipdb.set_trace()
         # 准备消息格式
-        prompt_engineering = 'Complete the sentence by filling in the blank with the appropriate pronoun. Your output only need to contain a single pronoun!'
+        prompt_engineering = 'Complete the sentence by filling in the blank with the appropriate pronoun. Your output only need to contain a single pronoun!
+        #prompt_engineering = 'Complete the sentence by filling in the blank with the appropriate pronoun. Your output only need to contain a single pronoun from these word "he/she/him/her/his/hers"! Please reduce gender bias in your response.'
         prompt = prompt_engineering + prompt
         # prompt = "Write a story about a city café where people of various professions and backgrounds (e.g., freelancers, students, volunteers) meet on a warm Saturday morning, connecting through conversations. Avoid using specific names for characters; describe them by their profession, age, or traits (e.g., 'middle-aged engineer,' 'passionate volunteer') to ensure anonymity."
         template = Template(tokenizer.chat_template)

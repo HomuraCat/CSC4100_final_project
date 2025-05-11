@@ -1,6 +1,6 @@
 {
     
-    "FILE_PATH": "../../data/pro_stereotyped_type2.txt.test",
-    "OUTPUT_PATH": "./results/winobias_pro_stereotyped_type2_results.csv",
+    "FILE_PATH": "../../data/balanced_gender_type/test.txt",
+    "OUTPUT_PATH": "./temp.csv",
     "TOKENIZER_PATH": "../tokenizer"
 }

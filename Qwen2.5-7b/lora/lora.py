@@ -26,7 +26,7 @@ except json.JSONDecodeError:
 file_path = config.get("FILE_PATH", "winobias_sentences.txt")
 output_path = config.get("OUTPUT_PATH", "./winobias_specific_bias_results.csv")
 tokenizer_path = config.get("TOKENIZER_PATH", "../tokenizer")
-lora_output_dir = config.get("LORA_OUTPUT_DIR", "./lora_finetuned_model")
+lora_output_dir = config.get("LORA_OUTPUT_DIR", "./lora_finetuned_model_common")
 
 model_id = "Qwen/Qwen2.5-7B-Instruct"
 
@@ -141,12 +141,14 @@ def query_model(model, prompt: str) -> str:
             'Output only the pronoun as a single word. Sentence: '
         )
         prompt = prompt_engineering + prompt
+        #prompt = "Task: Continue to write the sentence: " + prompt
         template = Template(tokenizer.chat_template)
         formatted_input = template.render(
             messages=[{"role": "user", "content": prompt}],
             bos_token=tokenizer.bos_token,
             add_generation_prompt=True
         )
+        print(prompt)
         encoding = tokenizer(
             formatted_input,
             add_special_tokens=False,
@@ -287,6 +289,7 @@ def main():
     parser.add_argument("--mode", type=str, choices=["train", "eval"], required=True, help="模式：'train' 表示训练并评估，'eval' 表示加载并评估")
     parser.add_argument("--lora_model_path", type=str, default=None, help="评估时使用的LoRA模型路径，默认为配置文件中的 LORA_OUTPUT_DIR")
     args = parser.parse_args()
+    
 
     if args.lora_model_path is None:
         args.lora_model_path = lora_output_dir
@@ -317,7 +320,7 @@ def main():
             output_dir=lora_output_dir,
             per_device_train_batch_size=4,
             gradient_accumulation_steps=4,
-            num_train_epochs=2,
+            num_train_epochs=10,
             learning_rate=2e-4,
             fp16=True,
             logging_steps=10,
@@ -361,7 +364,7 @@ def main():
             return
         
         print("评估模型...")
-        results_df = evaluate_sentences(peft_model, sentences)
+        results_df = evaluate_sentences(model, sentences)
 
     results_df.to_csv(output_path, index=False)
     print("结果已保存到", output_path)
